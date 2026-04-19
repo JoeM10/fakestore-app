@@ -1,0 +1,72 @@
+.loading-spinner-wrapper {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.spinner {
+  width: 64px;
+  height: 64px;
+  border: 8px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #0d6efd;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.loading-text {
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.add-cart-toast {
+  position: absolute;
+  top: -2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(136, 237, 99, 0.771);
+  color: #fff;
+  padding: 0.45rem 0.85rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+  z-index: 10;
+}
+
+.delete-success-toast {
+  position: absolute;
+  top: -2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(25, 135, 84, 0.96);
+  color: #fff;
+  padding: 0.45rem 0.85rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+  z-index: 10;
+}
+
+.delete-error-toast {
+  position: absolute;
+  top: -2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(220, 53, 69, 0.96);
+  color: #fff;
+  padding: 0.45rem 0.85rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+  z-index: 10;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

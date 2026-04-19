@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Axios from 'axios'
 import api from './fakeStoreAPI'
 import { useState, useEffect } from 'react';
+import LoadingSpinner from './LoadingSpinner'
 
 export default function Products() {
     const [loading, setLoading] = useState(true)
@@ -27,7 +28,11 @@ export default function Products() {
 
 
     if (loading) {
-        return <div className="container mt-5"><h2>Loading products...</h2></div>;
+        return (
+            <div className="container mt-5">
+                <LoadingSpinner label="Loading products..." />
+            </div>
+        )
     }
 
     return (

@@ -1,13 +1,17 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import api from './fakeStoreAPI'
 import Button from 'react-bootstrap/esm/Button'
+import LoadingSpinner from './LoadingSpinner'
+import DeleteProduct from './DeleteProduct'
 
 export default function ProductDetails() {
     const { id } = useParams()
     const [product, setProduct] = useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+    const [cartMessage, setCartMessage] = useState('')
+    const timeoutRef = useRef(null)
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -27,8 +31,20 @@ export default function ProductDetails() {
         }
     }, [id])
 
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current)
+            }
+        }
+    }, [])
+
     if (loading) {
-        return <div className="container mt-5"><h2>Loading product...</h2></div>
+        return (
+            <div className="container mt-5">
+                <LoadingSpinner label="Loading product..." />
+            </div>
+        )
     }
 
     if (error) {
@@ -64,13 +80,36 @@ export default function ProductDetails() {
                             Rating: {product.rating.rate} / 5 ({product.rating.count} reviews)
                             </p>
                         )}
-                        <div className="row">
+                        <div className="row text-center position-relative">
+                            {cartMessage && (
+                                <div className="add-cart-toast">
+                                    {cartMessage}
+                                </div>
+                            )}
                             <Link to="/productpage" className="btn col btn-secondary mt-3">
                                 Back to Products
                             </Link>
-                            <Button variant="primary" className="btn col mt-3 ms-3">
+                            <Button
+                                variant="primary"
+                                className="btn col mt-3 ms-3"
+                                onClick={() => {
+                                    setCartMessage('Added to cart!')
+                                    if (timeoutRef.current) {
+                                        clearTimeout(timeoutRef.current)
+                                    }
+                                    timeoutRef.current = window.setTimeout(() => {
+                                        setCartMessage('')
+                                        timeoutRef.current = null
+                                    }, 2500)
+                                }}
+                            >
                                 Add to Cart
                             </Button>
+                        </div>
+                        <div className="row mt-4">
+                            <div className="col">
+                                <DeleteProduct productId={ id } />
+                            </div>
                         </div>
                     </div>
                 </div>
