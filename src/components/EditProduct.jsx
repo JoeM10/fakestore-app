@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
-import Button from 'react-bootstrap/esm/Button'
+import Button from 'react-bootstrap/Button'
 import api from './fakeStoreAPI'
 import Modal from 'react-bootstrap/Modal'
+import Form from 'react-bootstrap/Form'
+import Alert from 'react-bootstrap/Alert'
 import { useParams, Link } from 'react-router-dom'
 import NavBar from './NavBar'
+import LoadingSpinner from './LoadingSpinner'
 
 export default function EditProduct() {
     const [title, setTitle] = useState('')
@@ -15,6 +18,8 @@ export default function EditProduct() {
     const [modalMessage, setModalMessage] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [errors, setErrors] = useState({})
+    const [loading, setLoading] = useState(true)
+    const [fetchError, setFetchError] = useState('')
     const { id } = useParams()
 
     const validateForm = () => {
@@ -51,7 +56,7 @@ export default function EditProduct() {
             setShowModal(true)
             setModalVariant('success')
             setModalMessage('Product updated successfully!')
-        } catch (error) {
+        } catch {
             setShowModal(true)
             setModalVariant('danger')
             setModalMessage('Error updating product.')
@@ -61,46 +66,90 @@ export default function EditProduct() {
     }
 
     
-    async function GetProductInfo() {
-        await api.get(`/${id}`)
-        .then(response => {
-            const { title, price, description, category } = response.data
-            setTitle(title)
-            setPrice(price)
-            setDescription(description)
-            setCategory(category)
-        })
-    }
     useEffect(() => {
-        GetProductInfo()
+        const getProductInfo = async () => {
+            setLoading(true)
+            try {
+                const response = await api.get(`/${id}`)
+                const { title, price, description, category } = response.data
+                setTitle(title)
+                setPrice(price)
+                setDescription(description)
+                setCategory(category)
+                setFetchError('')
+            } catch (error) {
+                console.error('Error fetching product for edit:', error)
+                setFetchError('Unable to load this product for editing.')
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        getProductInfo()
     }, [id])
+
+    if (loading) {
+        return (
+            <>
+                <NavBar />
+                <div className="container mt-5">
+                    <LoadingSpinner label="Loading product form..." />
+                </div>
+            </>
+        )
+    }
+
+    if (fetchError) {
+        return (
+            <>
+                <NavBar />
+                <div className="container mt-5">
+                    <Alert variant="danger">{fetchError}</Alert>
+                    <Button as={Link} to="/products" variant="secondary">
+                        Back to Products
+                    </Button>
+                </div>
+            </>
+        )
+    }
     
     return (
         <>
             <NavBar />
             <div className="container mt-5">
                 <h2>Edit Product</h2>
+                <Alert variant="info">
+                    FakeStoreAPI will respond as if the update succeeded, but the change will not persist.
+                </Alert>
                 <div className="container mt-4">
-                    <form noValidate onSubmit={handleSubmit}>
-                        <label>Title</label>
-                        <input
-                            type="text"
-                            value={title}
-                            onChange={(e) => {
-                                setTitle(e.target.value)
-                                if (errors.title) {
-                                    setErrors((prev) => ({ ...prev, title: '' }))
-                                }
-                            }}
-                            className={`form-control bg-light ${errors.title ? 'is-invalid' : ''}`}
-                            required
-                        />
-                        {errors.title && <div className="invalid-feedback d-block">{errors.title}</div>}
-                        <label>Price</label>
-                        <div className='input-group'>
-                            <div className='input-group-text'>$</div>
-                            <input
+                    <Form noValidate onSubmit={handleSubmit}>
+                        <Form.Group className="mb-3" controlId="editTitle">
+                            <Form.Label>Title</Form.Label>
+                            <Form.Control
+                                className="bg-light"
+                                type="text"
+                                value={title}
+                                onChange={(e) => {
+                                    setTitle(e.target.value)
+                                    if (errors.title) {
+                                        setErrors((prev) => ({ ...prev, title: '' }))
+                                    }
+                                }}
+                                isInvalid={Boolean(errors.title)}
+                                required
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.title}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" controlId="editPrice">
+                            <Form.Label>Price</Form.Label>
+                            <Form.Control
+                                className="bg-light"
                                 type="number"
+                                min="0"
+                                step="0.01"
                                 value={price}
                                 onChange={(e) => {
                                     setPrice(e.target.value)
@@ -108,49 +157,64 @@ export default function EditProduct() {
                                         setErrors((prev) => ({ ...prev, price: '' }))
                                     }
                                 }}
-                                className={`form-control bg-light ${errors.price ? 'is-invalid' : ''}`}
+                                isInvalid={Boolean(errors.price)}
                                 required
-                                />
-                        </div>
-                        {errors.price && <div className="invalid-feedback d-block">{errors.price}</div>}
-                        <label>Description</label>
-                        <textarea
-                            type="text"
-                            value={description}
-                            onChange={(e) => {
-                                setDescription(e.target.value)
-                                if (errors.description) {
-                                    setErrors((prev) => ({ ...prev, description: '' }))
-                                }
-                            }}
-                            className={`form-control bg-light ${errors.description ? 'is-invalid' : ''}`}
-                            required
-                        />
-                        {errors.description && <div className="invalid-feedback d-block">{errors.description}</div>}
-                        <label>Category</label>
-                        <input
-                            type="text"
-                            value={category}
-                            onChange={(e) => {
-                                setCategory(e.target.value)
-                                if (errors.category) {
-                                    setErrors((prev) => ({ ...prev, category: '' }))
-                                }
-                            }}
-                            className={`form-control bg-light ${errors.category ? 'is-invalid' : ''}`}
-                            required
-                        />
-                        {errors.category && <div className="invalid-feedback d-block">{errors.category}</div>}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.price}
+                            </Form.Control.Feedback>
+                        </Form.Group>
 
-                        <div className="container justify-content-center d-flex mt-3">
+                        <Form.Group className="mb-3" controlId="editDescription">
+                            <Form.Label>Description</Form.Label>
+                            <Form.Control
+                                className="bg-light"
+                                as="textarea"
+                                rows={4}
+                                value={description}
+                                onChange={(e) => {
+                                    setDescription(e.target.value)
+                                    if (errors.description) {
+                                        setErrors((prev) => ({ ...prev, description: '' }))
+                                    }
+                                }}
+                                isInvalid={Boolean(errors.description)}
+                                required
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.description}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" controlId="editCategory">
+                            <Form.Label>Category</Form.Label>
+                            <Form.Control
+                                className="bg-light"
+                                type="text"
+                                value={category}
+                                onChange={(e) => {
+                                    setCategory(e.target.value)
+                                    if (errors.category) {
+                                        setErrors((prev) => ({ ...prev, category: '' }))
+                                    }
+                                }}
+                                isInvalid={Boolean(errors.category)}
+                                required
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.category}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+
+                        <div className="container justify-content-center d-flex mt-3 gap-3 flex-wrap">
                             <Button type="submit" className="btn btn-info" disabled={isSubmitting}>
                                 {isSubmitting ? 'Updating...' : 'Update Product'}
                             </Button>
-                            <Button as={Link} to={`/product/${id}`} variant="secondary" className="ms-3">
+                            <Button as={Link} to={`/products/${id}`} variant="secondary">
                                 Back to Product
                             </Button>
                         </div>
-                    </form>
+                    </Form>
                 </div>
 
                 <Modal show={showModal} onHide={() => setShowModal(false)} centered>

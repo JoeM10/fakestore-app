@@ -14,12 +14,12 @@ export default function Home() {
                 <div className="container">
                     <div className="row">
                         <div className="col-md-6">
-                            <Button as={Link} to="/productpage" variant="primary" className="mt-3">
+                            <Button as={Link} to="/products" variant="primary" className="mt-3">
                                 View Product List
                             </Button>
                         </div>
                         <div className="col-md-6">
-                            <Button as={Link} to="/addproduct" variant="secondary" className="mt-3 ml-2">
+                            <Button as={Link} to="/add-product" variant="secondary" className="mt-3 ms-md-2">
                                 Add New Product
                             </Button>
                         </div>

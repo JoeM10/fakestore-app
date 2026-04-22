@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import api from "./fakeStoreAPI"
-import Button from 'react-bootstrap/esm/Button'
+import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 
 export default function DeleteProduct({ productId, onDeleteSuccess }) {
@@ -28,7 +28,7 @@ export default function DeleteProduct({ productId, onDeleteSuccess }) {
                 setDeleteMessage('')
                 setIsDeleting(false)
                 onDeleteSuccess?.()
-                navigate('/productpage')
+                navigate('/products')
                 timeoutRef.current = null
             }, 2000)
         } catch (error) {

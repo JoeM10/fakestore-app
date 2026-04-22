@@ -1,37 +1,45 @@
 import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom'
-import Axios from 'axios'
 import api from './fakeStoreAPI'
 import { useState, useEffect } from 'react';
 import LoadingSpinner from './LoadingSpinner'
+import Alert from 'react-bootstrap/Alert'
 
 export default function Products() {
     const [loading, setLoading] = useState(true)
     const [products, setProducts] = useState([])
+    const [error, setError] = useState('')
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await api.get();
-                setProducts(response.data);
-                console.log(response.data);
+                const response = await api.get()
+                setProducts(response.data)
+                setError('')
             } catch (error) {
-                console.error("Error fetching products:", error);
+                console.error("Error fetching products:", error)
+                setError('Unable to load products right now. Please try again.')
             } finally {
-                setLoading(false);
+                setLoading(false)
             }
-        };
+        }
 
-        fetchProducts();
-    }, []);
-
-
+        fetchProducts()
+    }, [])
 
     if (loading) {
         return (
             <div className="container mt-5">
                 <LoadingSpinner label="Loading products..." />
             </div>
+        )
+    }
+
+    if (error) {
+        return (
+            <Alert variant="danger" className="mt-4">
+                {error}
+            </Alert>
         )
     }
 
@@ -48,7 +56,7 @@ export default function Products() {
                                 <div className="container">
                                     <h5 className="card-title">{product.title}</h5>
                                     <p className="card-text"><strong>Price:</strong> ${product.price}</p>
-                                    <Button as={Link} to={`/product/${product.id}`} variant="success" className="btn">
+                                    <Button as={Link} to={`/products/${product.id}`} variant="success" className="btn">
                                         View Details
                                     </Button>
                                 </div>

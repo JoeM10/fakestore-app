@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import api from './fakeStoreAPI'
-import Button from 'react-bootstrap/esm/Button'
-import Modal from 'react-bootstrap/Modal'
+import Button from 'react-bootstrap/Button'
+import Alert from 'react-bootstrap/Alert'
 import LoadingSpinner from './LoadingSpinner'
 import DeleteProduct from './DeleteProduct'
-import EditProduct from './EditProduct'
 import NavBar from './NavBar'
 
 export default function ProductDetails() {
@@ -14,7 +13,6 @@ export default function ProductDetails() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [cartMessage, setCartMessage] = useState('')
-    const [showEditModal, setShowEditModal] = useState(false)
     const timeoutRef = useRef(null)
 
     useEffect(() => {
@@ -43,17 +41,6 @@ export default function ProductDetails() {
         }
     }, [])
 
-    const handleEditSuccess = async () => {
-        setShowEditModal(false)
-        // Refetch the product to show updated data
-        try {
-            const response = await api.get(`${id}`)
-            setProduct(response.data)
-        } catch (err) {
-            console.error('Error refetching product:', err)
-        }
-    }
-
     if (loading) {
         return (
             <div className="container mt-5">
@@ -63,11 +50,25 @@ export default function ProductDetails() {
     }
 
     if (error) {
-        return <div className="container mt-5"><h2>{error}</h2></div>
+        return (
+            <>
+                <NavBar />
+                <div className="container mt-5">
+                    <Alert variant="danger" className="mb-0">{error}</Alert>
+                </div>
+            </>
+        )
     }
 
     if (!product) {
-        return <div className="container mt-5"><h2>Product not found.</h2></div>
+        return (
+            <>
+                <NavBar />
+                <div className="container mt-5">
+                    <Alert variant="warning" className="mb-0">Product not found.</Alert>
+                </div>
+            </>
+        )
     }
 
     return (
@@ -103,7 +104,7 @@ export default function ProductDetails() {
                                             {cartMessage}
                                         </div>
                                     )}
-                                    <Link to="/productpage" className="btn col btn-secondary mt-3">
+                                    <Link to="/products" className="btn col btn-secondary mt-3">
                                         Back to Products
                                     </Link>
                                     <Button
@@ -125,7 +126,7 @@ export default function ProductDetails() {
                                 </div>
                                 <div className="row mt-4">
                                     <div className="col">
-                                        <Button variant="warning" as={Link} to={`/editproduct/${id}`} className="btn w-100">
+                                        <Button variant="warning" as={Link} to={`/edit-product/${id}`} className="btn w-100">
                                             Edit Product
                                         </Button>
                                     </div>

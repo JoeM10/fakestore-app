@@ -1,26 +1,24 @@
+import Container from 'react-bootstrap/Container'
+import Nav from 'react-bootstrap/Nav'
+import Navbar from 'react-bootstrap/Navbar'
+import { Link } from 'react-router-dom'
 
 export default function NavBar() {
     return (
-        <nav className="navbar navbar-expand-md navbar-light bg-light mb-4">
-            <div className="container">
-                <a href="/" class="navbar-brand"><strong>FakeStore</strong></a>
-                <button className="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-label="Expand Navigation">
-                    <span className="navbar-toggler-icon"></span>
-                </button>
-                <div className="collapse navbar-collapse" id="navbarNav">
-                    <ul className="navbar-nav">
-                        <li className="nav-item">
-                            <a href="/" className="nav-link">Home</a>
-                        </li>
-                        <li className="nav-item">
-                            <a href="/productpage" className="nav-link">Products</a>
-                        </li>
-                        <li className="nav-item">
-                            <a href="/addproduct" className="nav-link">Add Product</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+        <Navbar expand="md" bg="light" className="mb-4 shadow-sm">
+            <Container>
+                <Navbar.Brand as={Link} to="/">
+                    <strong>FakeStore</strong>
+                </Navbar.Brand>
+                <Navbar.Toggle aria-controls="main-navbar" />
+                <Navbar.Collapse id="main-navbar">
+                    <Nav className="ms-auto">
+                        <Nav.Link as={Link} to="/">Home</Nav.Link>
+                        <Nav.Link as={Link} to="/products">Products</Nav.Link>
+                        <Nav.Link as={Link} to="/add-product">Add Product</Nav.Link>
+                    </Nav>
+                </Navbar.Collapse>
+            </Container>
+        </Navbar>
     )
 }

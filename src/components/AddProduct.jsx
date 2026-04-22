@@ -1,7 +1,9 @@
 import api from "./fakeStoreAPI";
 import { useState } from 'react'
 import Modal from 'react-bootstrap/Modal'
-import Button from 'react-bootstrap/esm/Button'
+import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
+import Alert from 'react-bootstrap/Alert'
 import NavBar from './NavBar'
 import { Link } from 'react-router-dom'
 
@@ -83,14 +85,17 @@ export default function AddProduct() {
             <NavBar />
             <div className="container mt-5">
                 <h2>Add New Product</h2>
-                <form noValidate onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label htmlFor="title">Title</label>
-                        <input
+                <Alert variant="info">
+                    FakeStoreAPI will accept the POST request, but the new product will not persist after future fetches.
+                </Alert>
+                <Form noValidate onSubmit={handleSubmit}>
+                    <Form.Group className="mb-3" controlId="title">
+                        <Form.Label>Title</Form.Label>
+                        <Form.Control
+                            className="bg-light"
                             type="text"
-                            className={`form-control bg-light ${errors.title ? 'is-invalid' : ''}`}
-                            id="title"
                             value={title}
+                            isInvalid={Boolean(errors.title)}
                             onChange={(e) => {
                                 setTitle(e.target.value)
                                 if (errors.title) {
@@ -98,33 +103,40 @@ export default function AddProduct() {
                                 }
                             }}
                         />
-                        {errors.title && <div className="invalid-feedback">{errors.title}</div>}
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="price">Price</label>
-                        <div className="input-group">
-                            <div className="input-group-text">$</div>
-                            <input
-                                type="number"
-                                className={`form-control bg-light ${errors.price ? 'is-invalid' : ''}`}
-                                id="price"
-                                value={price}
-                                onChange={(e) => {
-                                    setPrice(e.target.value)
-                                    if (errors.price) {
-                                        setErrors((prev) => ({ ...prev, price: '' }))
-                                    }
-                                }}
-                            />
-                        </div>
-                        {errors.price && <div className="invalid-feedback d-block">{errors.price}</div>}
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="description">Description</label>
-                        <textarea
-                            className={`form-control bg-light ${errors.description ? 'is-invalid' : ''}`}
-                            id="description"
+                        <Form.Control.Feedback type="invalid">
+                            {errors.title}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+
+                    <Form.Group className="mb-3" controlId="price">
+                        <Form.Label>Price</Form.Label>
+                        <Form.Control
+                            className="bg-light"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={price}
+                            isInvalid={Boolean(errors.price)}
+                            onChange={(e) => {
+                                setPrice(e.target.value)
+                                if (errors.price) {
+                                    setErrors((prev) => ({ ...prev, price: '' }))
+                                }
+                            }}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.price}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+
+                    <Form.Group className="mb-3" controlId="description">
+                        <Form.Label>Description</Form.Label>
+                        <Form.Control
+                            className="bg-light"
+                            as="textarea"
+                            rows={4}
                             value={description}
+                            isInvalid={Boolean(errors.description)}
                             onChange={(e) => {
                                 setDescription(e.target.value)
                                 if (errors.description) {
@@ -132,33 +144,39 @@ export default function AddProduct() {
                                 }
                             }}
                         />
-                        {errors.description && <div className="invalid-feedback">{errors.description}</div>}
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="category">Category</label>
-                        <input
+                        <Form.Control.Feedback type="invalid">
+                            {errors.description}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+
+                    <Form.Group className="mb-3" controlId="category">
+                        <Form.Label>Category</Form.Label>
+                        <Form.Control
+                            className="bg-light"
                             type="text"
-                            className={`form-control bg-light ${errors.category ? 'is-invalid' : ''}`}
-                            id="category"
                             value={category}
+                            isInvalid={Boolean(errors.category)}
                             onChange={(e) => {
                                 setCategory(e.target.value)
                                 if (errors.category) {
                                     setErrors((prev) => ({ ...prev, category: '' }))
                                 }
                             }}
-                            />
-                        {errors.category && <div className="invalid-feedback">{errors.category}</div>}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.category}
+                        </Form.Control.Feedback>
+                    </Form.Group>
+
+                    <div className="d-flex flex-wrap gap-2">
+                        <Button type="submit" variant="primary" disabled={isSubmitting}>
+                            {isSubmitting ? 'Adding...' : 'Add Product'}
+                        </Button>
+                        <Button as={Link} to="/products" variant="secondary">
+                            Back to Products
+                        </Button>
                     </div>
-                    <div className="container">
-                    <button type="submit" className="btn btn-primary mt-3" disabled={isSubmitting}>
-                        {isSubmitting ? 'Adding...' : 'Add Product'}
-                    </button>
-                    <Button as={Link} to="/productpage" variant="secondary" className="mt-3 ms-3">
-                        Back to Products
-                    </Button>
-                    </div>
-                </form>
+                </Form>
 
                 <Modal show={showModal} onHide={() => setShowModal(false)} centered>
                     <Modal.Header closeButton>
